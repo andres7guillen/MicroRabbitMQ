@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace MicroRabbit.Infra.Bus
 {
-    internal sealed class RabbitMQBus : IEventBus
+    public sealed class RabbitMQBus : IEventBus
     {
         private readonly IMediator _mediator;
         private readonly Dictionary<string, List<Type>> _handlers;
