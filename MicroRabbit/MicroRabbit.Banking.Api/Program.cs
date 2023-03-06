@@ -3,12 +3,14 @@ using MicroRabbit.Banking.Application.Interfaces;
 using MicroRabbit.Banking.Application.Services;
 using MicroRabbit.Banking.Data.Context;
 using MicroRabbit.Banking.Data.Repository;
+using MicroRabbit.Banking.Domain.Commands;
 using MicroRabbit.Banking.Domain.Interfaces;
 using MicroRabbit.Domain.Core.Bus;
 using MicroRabbit.Infra.Bus;
 using MicroRabbit.Infra.IoC;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,13 +22,16 @@ builder.Services.AddDbContext<BankingDbContext>(options =>
 //Domain
 builder.Services.AddTransient<IEventBus, RabbitMQBus>();
 
-//Application services
-builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly(),
+    typeof(CreateTransferCommand).Assembly,
+    typeof(TransferCommand).Assembly
+    ));
+//builder.Services.AddMediatR(typeof(Program));
 
-//Data
+//Application services
+builder.Services.AddTransient<IAccountService, AccountService>();//Data
 builder.Services.AddTransient<IAccountRepository, AccountRepository>();
 builder.Services.AddTransient<BankingDbContext>();
-builder.Services.AddMediatR(typeof(Program));
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
